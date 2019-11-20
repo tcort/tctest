@@ -64,6 +64,20 @@ DONE: 5 Assertions, 4 Passed, 1 Failed
 
 ```
 
+## automake Example
+
+**Makefile.am**
+
+```
+check_PROGRAMS = mytest
+
+mytest_SOURCES = tctest.h myfile.c myfile.h myfile.test.c
+mytest_LDADD = -ldl -lelf
+mytest_LDFLAGS = -rdynamic
+
+TESTS = $(check_PROGRAMS)
+```
+
 ## Caveats
 
 This likely only works on Linux, but it may work on other systems that support dynamic loading (`libdl`), ELF binary format (`libelf`), and have a `/proc` file system laid out with `/proc/${pid}/exe` linking to the executable with the given `pid`.

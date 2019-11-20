@@ -31,6 +31,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define TCTEST_VERSION 20191119
+
 int pass_count = 0;
 int fail_count = 0;
 
@@ -64,13 +66,16 @@ int main(int argc, char *argv[]) {
 	void (*f)(void);
 	void *d;
 
+	(void) argc;
+	(void) argv;
+
 	if (elf_version(EV_CURRENT) == EV_NONE) {
 		fprintf(stderr, "libelf library out of daten");
 		goto fail_44;
 	}
 
 	pid = getpid();
-	bzero(path, TCTEST_PATH_MAX);
+	memset(path, '\0', TCTEST_PATH_MAX);
 	snprintf(path, TCTEST_PATH_MAX - 1, "/proc/%d/exe", pid);
 
 	fd = open(path, O_RDONLY);
@@ -122,11 +127,11 @@ int main(int argc, char *argv[]) {
 				}
 
 				if (strncmp(symbol_name, "test_", strlen("test_")) == 0) {
-					f = (void (*)(void))dlsym(d, symbol_name);
+					*(void **)(&f) = dlsym(d, symbol_name);
 					if (f) {
 						f();
 					} else {
-						fprintf(stderr, "couldn't find functionn");
+						fprintf(stderr, "couldn't find function\n");
 						goto fail_99;
 					}
 				}
